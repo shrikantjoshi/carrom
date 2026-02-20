@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Carrom Rating Calculator</title>
+  <style>
+    body { font-family: Arial; padding: 20px; max-width: 500px; }
+    input { margin: 5px 0; width: 100%; padding: 5px; }
+    button { padding: 8px 12px; margin-top: 10px; }
+    .result { margin-top: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<h2>Carrom Rating Calculator</h2>
+
+<label>Player 1 Rating:</label>
+<input type="number" id="r1" value="1600">
+
+<label>Player 2 Rating:</label>
+<input type="number" id="r2" value="1000">
+
+<label>Player 1 Score:</label>
+<input type="number" id="s1" value="25">
+
+<label>Player 2 Score:</label>
+<input type="number" id="s2" value="10">
+
+<label>Number of Boards:</label>
+<input type="number" id="boards" value="3">
+
+<button onclick="calculate()">Calculate New Ratings</button>
+
+<div class="result" id="output"></div>
+
+<script>
+function calculate() {
+
+  const F = 400;
+  const P = 5;
+
+  let r1 = parseFloat(document.getElementById("r1").value);
+  let r2 = parseFloat(document.getElementById("r2").value);
+  let s1 = parseFloat(document.getElementById("s1").value);
+  let s2 = parseFloat(document.getElementById("s2").value);
+  let Nb = parseFloat(document.getElementById("boards").value);
+
+  let S = s1 - s2;
+  let D = r1 - r2;
+
+  // ----- Equation 1: Weighted Score -----
+  let Sw = Math.sign(S) * Math.abs(S) *
+      (1 + 0.3 * 
+      ((Math.pow(10, (Math.abs(S)/Nb - P)) - 1) /
+       (Math.pow(10, (Math.abs(S)/Nb - P)) + 1)));
+
+  // ----- Equation 2: Rating Change -----
+  let expected = 25 - (50 / (1 + Math.pow(10, D / F)));
+  let Cr = Sw - expected;
+
+  // New Ratings (Rounded)
+  let newR1 = Math.round(r1 + Cr);
+  let newR2 = Math.round(r2 - Cr);
+
+  document.getElementById("output").innerHTML =
+    "Weighted Diff (Sw): " + Sw.toFixed(2) + "<br>" +
+    "Expected Weighted Diff: " + expected.toFixed(2) + "<br><br>" +
+    "New Player 1 Rating: " + newR1 + "<br>" +
+    "New Player 2 Rating: " + newR2;
+}
+</script>
+
+</body>
+</html>
+
